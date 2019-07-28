@@ -3,78 +3,106 @@ from pyzbar.pyzbar import decode
 
 cap = cv2.VideoCapture(0)
 
-while(True):
-    ret, frame = cap.read()
+def core_compass(imagen, margen_x=0.2, margen_y=0.2, imprimir_posicion=False, ver_delimitacion=False):
+    """Detecta un Codigo QR basandose en los Puntos Cardinales.
 
-    height, width = frame.shape[:2]
+    Devuelve:
 
-    size_border_x = int(width * 0.20)
-    size_border_y = int(height * 0.20)
+    donde_estoy --> Norte, Este, Sur, Oeste, NorOeste, NorEste, SurEste, SurOeste.
+    
+    imagen --> imagen
+
+    Parámetros:
+
+    imagen <-- es la instancia de la imagen, o frame de un video.
+    """
+    alto, ancho = imagen.shape[:2]
+
+    size_border_x = int(ancho * margen_x)
+    size_border_y = int(alto * margen_y)
 
     color_border = (246,12,95)
     size_border = 2
 
-    cv2.line(frame,(size_border_x, 0), (size_border_x, height), color_border, size_border)
-    cv2.line(frame,(width-size_border_x, 0), (width-size_border_x,height), color_border, size_border)
+    if ver_delimitacion: cv2.line(imagen,(size_border_x, 0), (size_border_x, alto), color_border, size_border)
+    if ver_delimitacion: cv2.line(imagen,(ancho-size_border_x, 0), (ancho-size_border_x,alto), color_border, size_border)
 
-    cv2.line(frame,(0, size_border_y), (width, size_border_y), color_border, size_border)
-    cv2.line(frame,(0, height-size_border_y), (width,height-size_border_y), color_border, size_border)
-    for code in decode(frame):
+    if ver_delimitacion: cv2.line(imagen,(0, size_border_y), (ancho, size_border_y), color_border, size_border)
+    if ver_delimitacion: cv2.line(imagen,(0, alto-size_border_y), (ancho,alto-size_border_y), color_border, size_border)
+    for code in decode(imagen):
         rect = code.rect
 
-        cv2.rectangle(frame, (rect.left, rect.top),
-        (rect.left + rect.width, rect.top + rect.height),
-        (0,255,0), 3)
+        if ver_delimitacion: cv2.rectangle(imagen, (rect.left, rect.top), (rect.left + rect.width, rect.top + rect.height), (0,255,0), 3)
 
         center_qr = (int(rect.left + rect.width/2), int(rect.top + rect.height/2))
-        print('Punto Centro QR:: ',center_qr)
-        cv2.circle(frame, center_qr, 10, (0,0,255), -1)
+        if imprimir_posicion: print('Punto Centro QR:: ',center_qr)
+        if ver_delimitacion: cv2.circle(imagen, center_qr, 10, (0,0,255), -1)
         donde_estoy = ''
 
         if center_qr[0] < size_border_x and center_qr[1] < size_border_y:
             # NorOeste
             donde_estoy = 'NorOeste'
-            print('Estoy en el NorOeste! -------------------------------------------- ')
-        elif center_qr[0] > (width-size_border_x) and center_qr[1] < size_border_y:
+            if imprimir_posicion: print('----------- Estoy en el NorOeste! -------------------------------------------- ')
+        elif center_qr[0] > (ancho-size_border_x) and center_qr[1] < size_border_y:
             # NorEste
             donde_estoy = 'NorEste'
-            print('Estoy en el NorEste! -------------------------------------------- ')
-        elif center_qr[0] > (width-size_border_x)  and center_qr[1] > (height-size_border_y):
+            if imprimir_posicion: print('----------- Estoy en el NorEste! -------------------------------------------- ')
+        elif center_qr[0] > (ancho-size_border_x)  and center_qr[1] > (alto-size_border_y):
             # SurEste
             donde_estoy = 'SurEste'
-            print('Estoy en el SurEste! -------------------------------------------- ')
-        elif center_qr[0] < size_border_x and center_qr[1] > (height-size_border_y):
+            if imprimir_posicion: print('----------- Estoy en el SurEste! -------------------------------------------- ')
+        elif center_qr[0] < size_border_x and center_qr[1] > (alto-size_border_y):
             # SurOeste
             donde_estoy = 'SurOeste'
-            print('Estoy en el SurOeste! -------------------------------------------- ')
+            if imprimir_posicion: print('----------- Estoy en el SurOeste! -------------------------------------------- ')
         elif center_qr[1] < size_border_y :
             # Norte
             donde_estoy = 'Norte'
-            print('Estoy en el NORTE! -------------------------------------------- ')
-        elif center_qr[0] > (width-size_border_x):
+            if imprimir_posicion: print('----------- Estoy en el NORTE! -------------------------------------------- ')
+        elif center_qr[0] > (ancho-size_border_x):
             # Este
             donde_estoy = 'Este'
-            print('Estoy en el ESTE! -------------------------------------------- ')
-        elif center_qr[1] > (height-size_border_y):
+            if imprimir_posicion: print('----------- Estoy en el ESTE! -------------------------------------------- ')
+        elif center_qr[1] > (alto-size_border_y):
             # Sur
             donde_estoy = 'Sur'
-            print('Estoy en el SUR! -------------------------------------------- ')
+            if imprimir_posicion: print('----------- Estoy en el SUR! -------------------------------------------- ')
         elif center_qr[0] < size_border_x:
             # Oeste
             donde_estoy = 'Oeste'
-            print('Estoy en el OESTE! -------------------------------------------- ')
+            if imprimir_posicion: print('----------- Estoy en el OESTE! -------------------------------------------- ')
         else :
             donde_estoy = 'Centro'
-            print(' ------------------ ¡ CENTRO ! -------------------------- ')
+            if imprimir_posicion: print(' ------------------ ¡ CENTRO ! -------------------------- ')
 
-        font = cv2.FONT_HERSHEY_COMPLEX
-        cv2.putText(frame,donde_estoy ,center_qr, font, 2,(235, 12, 249), 2, cv2.LINE_AA)
+        if ver_delimitacion: cv2.putText(imagen,donde_estoy ,center_qr, cv2.FONT_HERSHEY_COMPLEX, 2,(235, 12, 249), 2, cv2.LINE_AA)
+        return donde_estoy, imagen
 
-    if ret:
-        cv2.imshow('video', frame)
+
+### ----------------------------------------------------------------
+### !Prueba con una imagen¡
+imagen = cv2.imread('03.png')
+_, imagen = core_compass(imagen, ver_delimitacion=True)
+# cv2.imshow('imagen', res_img)
+cv2.imwrite('posicion_qr.png', imagen)
+cv2.waitKey(0)
+### ----------------------------------------------------------------
+
+
+### ----------------------------------------------------------------
+### ¡Prueba con la camara!
+# while(True):
+#     ret, frame = cap.read()
+#     resp, frame = core_compass(frame)
+#     if resp:
+#         print('resp:: ',resp)
+
+#     if ret:
+#         cv2.imshow('video', frame)
     
-    if cv2.waitKey(1) & 0xFF == 27:
-        break
+#     if cv2.waitKey(1) & 0xFF == 27:
+#         break
 
-cap.release()
-cv2.destroyAllWindows()
+# cap.release()
+# cv2.destroyAllWindows()
+### ----------------------------------------------------------------
