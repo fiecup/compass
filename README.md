@@ -16,7 +16,25 @@ deactivate                    # Para salir del entorno virtual (EJECUTAR SOLO SI
 pip3 install -r requirements.txt
 ```
 
+El princio básicamente del código es identificar en que posición de la pantalla se encuentra el Código QR, la función retorna dos (2) valores:.
+
+1. **donde_estoy:** : posición donde se encuentra la imagen, con los valores _Norte, Sur, Este, Oeste, NorOeste, NorEste, SurEste y SurOeste_.
+2. **imagen** :  instancia original de la imagen procesada por la funcion.
+
+## Ejemplo:
+
+Imagen de entrada:
+
+<img width='450px' src='https://github.com/fiecup/compass/blob/master/03.png?raw=true' alt='Imagen 03.png'/>
+
+Imagen de salida:
+
+<img width='450px' src='https://github.com/fiecup/compass/blob/master/posicion_qr.png?raw=true' alt='Imagen 03.png'/>
 
 
+
+
+
+<hr>
 
 _Si te gustaria colaborar, sería fantástico. :v:_
