@@ -80,10 +80,10 @@ def core_compass(imagen, margen_x=0.2, margen_y=0.2, imprimir_posicion=False, ve
 
 
 ### ----------------------------------------------------------------
-### !Prueba con una imagen¡
+### ¡Prueba con una imagen!
 imagen = cv2.imread('03.png')
 _, imagen = core_compass(imagen, ver_delimitacion=True)
-# cv2.imshow('imagen', res_img)
+# cv2.imshow('imagen', res_img)     # Si prefieres ver el resultado en pantalla al ejecutarlo.
 cv2.imwrite('posicion_qr.png', imagen)
 cv2.waitKey(0)
 ### ----------------------------------------------------------------
